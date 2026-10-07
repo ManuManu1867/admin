@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #111827; --accent: #2563eb; --bg: #f3f4f6;
+            --surface: #ffffff; --text: #111827; --text-muted: #6b7280;
+            --border: #e5e7eb; --radius: 8px; --danger: #ef4444; --success: #16a34a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* LOGIN */
+        #loginScreen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 12px;
+            width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-card h1 { font-size: 1.5rem; margin-bottom: 24px; text-align: center; }
+        .login-card input {
+            width: 100%; padding: 12px; border: 1px solid var(--border);
+            border-radius: 6px; margin-bottom: 12px; font-size: 1rem;
+        }
+        .login-card button {
+            width: 100%; padding: 12px; background: var(--primary);
+            color: white; border: none; border-radius: 6px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+        }
+        .login-card button:hover { background: var(--accent); }
+        .login-error { color: var(--danger); font-size: 0.85rem; margin-top: 8px; text-align: center; min-height: 20px; }
+
+        /* APP */
+        #appScreen { display: none; }
+        header {
+            background: var(--primary); color: white; padding: 14px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 50;
+        }
+        header h1 { font-size: 1.1rem; }
+        header .user-info { font-size: 0.8rem; opacity: 0.8; margin-left: 10px; }
+        header .header-actions { display: flex; gap: 8px; align-items: center; }
+        header button {
+            background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem;
+        }
+        header button:hover { background: rgba(255,255,255,0.25); }
+
+        main { padding: 24px 5%; max-width: 1200px; margin: 0 auto; }
+
+        /* TABS */
+        .tabs {
+            display: flex; gap: 4px; margin-bottom: 20px;
+            background: white; padding: 4px; border-radius: 10px;
+            border: 1px solid var(--border); width: fit-content;
+        }
+        .tab-btn {
+            padding: 10px 20px; border: none; background: transparent;
+            font-weight: 700; font-size: 0.9rem; border-radius: 8px;
+            cursor: pointer; color: var(--text-muted); transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        /* TOOLBAR */
+        .toolbar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1; max-width: 320px; padding: 10px 14px;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.9rem; outline: none;
+        }
+        .search-input:focus { border-color: var(--accent); }
+        .btn-primary {
+            background: var(--primary); color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 0.9rem; white-space: nowrap;
+        }
+        .btn-primary:hover { background: var(--accent); }
+
+        /* INFO BOX */
+        .info-box {
+            background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af;
+            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem;
+        }
+
+        /* LISTA PRODUCTOS */
+        .lista { display: flex; flex-direction: column; gap: 8px; }
+        .item-row {
+            display: flex; align-items: center; gap: 12px;
+            background: white; padding: 10px 14px; border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.15s; cursor: grab;
+        }
+        .item-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .item-row.dragging { opacity: 0.4; cursor: grabbing; }
+        .item-row.drag-over { border-color: var(--accent); border-width: 2px; }
+
+        .drag-handle { color: #cbd5e1; font-size: 1.2rem; cursor: grab; user-select: none; padding: 0 4px; }
+
+        .item-thumb {
+            width: 60px; height: 60px; border-radius: 8px;
+            background: #f3f4f6; overflow: hidden; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .item-thumb .no-photo { color: #9ca3af; font-size: 0.7rem; text-align: center; padding: 4px; }
+
+        .item-info { flex: 1; min-width: 0; }
+        .item-info h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-info .meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; }
+        .item-info .badge-cat {
+            display: inline-block; background: #f3f4f6; color: #374151;
+            padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;
+            font-weight: 700; text-transform: uppercase;
+        }
+        .item-info .foto-count {
+            display: inline-flex; align-items: center; gap: 3px;
+            color: var(--accent); font-weight: 700;
+        }
+
+        .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .btn-icon {
+            background: var(--bg); border: 1px solid var(--border); color: var(--text);
+            width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; transition: all 0.15s;
+        }
+        .btn-icon:hover { background: var(--surface); border-color: var(--primary); }
+        .btn-icon.fotos:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        .btn-icon.delete:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px; overflow-y: auto;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white; border-radius: 12px; width: 100%; max-width: 900px;
+            max-height: 92vh; overflow-y: auto; padding: 24px;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+        }
+        .modal-header h2 { font-size: 1.2rem; }
+        .btn-cerrar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); line-height: 1; }
+
+        .modal-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+        @media (max-width: 800px) { .modal-grid { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 0.9rem; outline: none; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+
+        /* DROP ZONE */
+        .drop-zone {
+            border: 3px dashed var(--border); border-radius: 12px;
+            padding: 28px 16px; text-align: center; cursor: pointer;
+            transition: all 0.2s; background: #fafafa; margin-bottom: 16px;
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: #eff6ff; }
+        .drop-zone p { margin-bottom: 4px; font-weight: 700; font-size: 0.9rem; }
+        .drop-zone small { color: var(--text-muted); font-size: 0.8rem; }
+        .drop-zone input[type="file"] { display: none; }
+
+        .upload-progress {
+            margin-top: 10px; padding: 12px; border-radius: 8px;
+            background: var(--bg); font-size: 0.85rem; display: none;
+        }
+        .upload-progress.active { display: block; }
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s; width: 0%; }
+
+        /* FOTOS GRID */
+        .photos-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px; margin-top: 8px;
+        }
+        .photo-item {
+            position: relative; aspect-ratio: 1; border-radius: 8px;
+            overflow: hidden; border: 2px solid var(--border); background: #f3f4f6;
+            cursor: grab;
+            transition: transform 0.15s, opacity 0.15s, border-color 0.15s;
+        }
+        .photo-item:active { cursor: grabbing; }
+        .photo-item.dragging {
+            opacity: 0.4;
+            transform: scale(0.9);
+        }
+        .photo-item.drag-over {
+            border-color: var(--accent);
+            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .photo-item .btn-borrar-foto {
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(239,68,68,0.9); color: white; border: none;
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+            font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
+            z-index: 3;
+        }
+        .photo-item .btn-borrar-foto:hover { background: var(--danger); }
+        .photo-item .badge-principal {
+            position: absolute; bottom: 4px; left: 4px;
+            background: var(--accent); color: white; padding: 2px 6px;
+            border-radius: 4px; font-size: 0.6rem; font-weight: 700;
+            z-index: 2;
+        }
+        .photo-item .drag-grip {
+            position: absolute; top: 4px; left: 4px;
+            background: rgba(0,0,0,0.55); color: white;
+            width: 22px; height: 22px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; pointer-events: none; z-index: 2;
+        }
+
+        /* PREVIEW */
+        .preview-box {
+            background: #fafafa; border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px; position: sticky; top: 20px;
+        }
+        .preview-title {
+            font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;
+        }
+        .tarjeta-preview {
+            background: white; border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden; pointer-events: none;
+        }
+        .visor-prev {
+            position: relative; background: #f3f4f6; height: 220px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .visor-prev img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-prev {
+            position: absolute; top: 10px; left: 10px; background: white;
+            padding: 3px 8px; border-radius: 4px; font-size: 0.65rem;
+            font-weight: 700; text-transform: uppercase;
+        }
+        .info-prev { padding: 12px; }
+        .info-prev h3 { font-size: 0.9rem; margin-bottom: 6px; font-weight: 600; }
+        .precio-prev { font-size: 1.1rem; font-weight: 800; }
+
+        /* PARCHE PREVIEW */
+        .parche-prev {
+            background: white; border: 2px solid var(--accent); border-radius: 10px;
+            padding: 20px; text-align: center;
+        }
+        .parche-prev img {
+            width: 90px; height: 90px; object-fit: contain;
+            background: #f9fafb; border-radius: 8px; padding: 6px;
+            border: 1px solid var(--border); margin-bottom: 10px;
+        }
+        .parche-prev h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .parche-prev span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .form-actions {
+            display: flex; gap: 10px; justify-content: flex-end;
+            margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+        }
+        .form-actions button { padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+        .form-actions .btn-cancelar { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
+        .form-actions .btn-guardar { background: var(--success); color: white; border: none; }
+        .form-actions .btn-guardar:hover { background: #15803d; }
+
+        .loading { text-align: center; padding: 40px; color: var(--text-muted); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+        /* ORDER INDICATOR */
+        .order-badge {
+            background: #f3f4f6; color: #6b7280; font-weight: 700;
+            font-size: 0.7rem; padding: 3px 8px; border-radius: 10px;
+            min-width: 30px; text-align: center; flex-shrink: 0;
+        }
+
+        /* SAVE ORDER BUTTON */
+        .save-order-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 12px 24px;
+            border-radius: 50px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            display: none; align-items: center; gap: 12px; z-index: 500;
+        }
+        .save-order-bar.show { display: flex; }
+        .save-order-bar button {
+            background: white; color: var(--primary); border: none;
+            padding: 6px 16px; border-radius: 20px; font-weight: 700; cursor: pointer;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <h1>🔐 Panel de Administración</h1>
+            <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+            <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password">
+            <button onclick="hacerLogin()">Entrar</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appScreen">
+        <header>
+            <div style="display:flex; align-items:center;">
+                <h1>⚙️ Panel de Administración</h1>
+                <span class="user-info" id="userEmail"></span>
+            </div>
+            <div class="header-actions">
+                <button onclick="location.reload()">🔄 Recargar</button>
+                <button onclick="cerrarSesion()">Cerrar sesión</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab-btn active" id="tabBtnCamisetas" onclick="cambiarTab('camisetas')">⚽ Camisetas</button>
+                <button class="tab-btn" id="tabBtnParches" onclick="cambiarTab('parches')">🛡️ Parches</button>
+            </div>
+
+            <div class="info-box">
+                💡 <strong>Arrastra y suelta</strong> las filas para cambiar el orden de los productos. Dentro de cada producto puedes <strong>arrastrar las fotos</strong> para reordenarlas (la primera es la principal).
+            </div>
+
+            <!-- TAB CAMISETAS -->
+            <div id="tabCamisetas">
+                <div class="toolbar">
+                    <input type="text" class="search-input" id="searchCamisetas" placeholder="🔍 Buscar camiseta..." oninput="filtrarCamisetas()">
+                    <button class="btn-primary" onclick="abrirModalProducto()">+ Añadir producto</button>
+                </div>
+                <div id="listaCamisetas" class="lista">
+                    <div class="loading">Cargando camisetas...</div>
+                </div>
+            </div>
+
+            <!-- TAB PARCHES -->
+            <div id="tabParches" style="display:none;">
+                <div class="toolbar">
+                    <input type="text" class="search-input" id="searchParches" placeholder="🔍 Buscar parche..." oninput="filtrarParches()">
+                    <button class="btn-primary" onclick="abrirModalParche()">+ Añadir parche</button>
+                </div>
+                <div id="listaParches" class="lista">
+                    <div class="loading">Cargando parches...</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- BARRA FLOTANTE DE GUARDAR ORDEN -->
+        <div class="save-order-bar" id="saveOrderBar">
+            <span id="saveOrderText">Orden modificado</span>
+            <button onclick="guardarOrden()">💾 Guardar orden</button>
+            <button onclick="descartarOrden()" style="background:transparent; color:white; border:1px solid rgba(255,255,255,0.4);">✕</button>
+        </div>
+    </div>
+
+    <!-- MODAL: PRODUCTO -->
+    <div class="modal-overlay" id="modalProducto">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="tituloModalProducto">Añadir producto</h2>
+                <button class="btn-cerrar" onclick="cerrarModal('modalProducto')">✕</button>
+            </div>
+
+            <div class="modal-grid">
+                <div>
+                    <input type="hidden" id="prodId">
+
+                    <div class="form-group">
+                        <label>Título *</label>
+                        <input type="text" id="prodTitulo" placeholder="Ej: España 1ª Equipación Mundial 2026" oninput="actualizarPreviewProducto()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select id="prodCategoria" onchange="actualizarPreviewProducto()">
+                            <option value="Mystery Box">Mystery Box</option>
+                            <option value="Selecciones">Selecciones</option>
+                            <option value="Clubes">Clubes</option>
+                            <option value="Retro">Retro</option>
+                            <option value="Ediciones Especiales">Ediciones Especiales</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Precio (€) *</label>
+                        <input type="number" step="0.01" id="prodPrecio" placeholder="24.99" oninput="actualizarPreviewProducto()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Precio anterior (€) — opcional, para mostrar tachado</label>
+                        <input type="number" step="0.01" id="prodPrecioAntes" placeholder="Ej: 30.00" oninput="actualizarPreviewProducto()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tallas (separadas por coma) *</label>
+                        <input type="text" id="prodTallas" value="XS, S, M, L, XL, XXL" placeholder="XS, S, M, L, XL, XXL">
+                    </div>
+
+                    <div class="form-group">
+                        <label>IDs de parches permitidos (separados por coma)</label>
+                        <input type="text" id="prodParches" placeholder="P-3631, P-3632 (dejar vacío = ninguno)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fotos del producto — <small style="color:var(--text-muted);font-weight:400">arrastra las fotos para reordenarlas</small></label>
+                        <div class="drop-zone" id="dropZoneProducto">
+                            <p>📸 Arrastra fotos aquí</p>
+                            <small>o pulsa para seleccionarlas</small>
+                            <input type="file" id="fileInputProducto" multiple accept="image/*">
+                        </div>
+                        <div class="upload-progress" id="uploadProgressProducto">
+                            <span id="uploadTextProducto">Subiendo...</span>
+                            <div class="progress-bar"><div class="progress-bar-fill" id="progressFillProducto"></div></div>
+                        </div>
+                        <div class="photos-grid" id="photosGridProducto"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="preview-box">
+                        <div class="preview-title">👁️ Vista previa en vivo</div>
+                        <div id="previewProducto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-cancelar" onclick="cerrarModal('modalProducto')">Cancelar</button>
+                <button class="btn-guardar" onclick="guardarProducto()">💾 Guardar producto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PARCHE -->
+    <div class="modal-overlay" id="modalParche">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="tituloModalParche">Añadir parche</h2>
+                <button class="btn-cerrar" onclick="cerrarModal('modalParche')">✕</button>
+            </div>
+
+            <div class="modal-grid">
+                <div>
+                    <input type="hidden" id="parcheId">
+
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" id="parcheNombre" placeholder="Ej: Campeón del Mundo" oninput="actualizarPreviewParche()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="parcheCategoria" onchange="actualizarPreviewParche()">
+                            <option value="General">General</option>
+                            <option value="Selecciones">Selecciones</option>
+                            <option value="Clubes">Clubes</option>
+                            <option value="Retro">Retro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Posición *</label>
+                        <select id="parchePosicion" onchange="actualizarPreviewParche()">
+                            <option value="C">Centro del Pecho (C)</option>
+                            <option value="I">Hombro Izquierdo (I)</option>
+                            <option value="D">Hombro Derecho (D)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Imagen del parche</label>
+                        <div class="drop-zone" id="dropZoneParche">
+                            <p>📸 Arrastra la imagen aquí</p>
+                            <small>o pulsa para seleccionarla</small>
+                            <input type="file" id="fileInputParche" accept="image/*">
+                        </div>
+                        <div class="upload-progress" id="uploadProgressParche">
+                            <span id="uploadTextParche">Subiendo...</span>
+                            <div class="progress-bar"><div class="progress-bar-fill" id="progressFillParche"></div></div>
+                        </div>
+                        <div class="photos-grid" id="photosGridParche"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="preview-box">
+                        <div class="preview-title">👁️ Vista previa</div>
+                        <div id="previewParche"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-cancelar" onclick="cerrarModal('modalParche')">Cancelar</button>
+                <button class="btn-guardar" onclick="guardarParche()">💾 Guardar parche</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIG
+        // ============================================================
+        const SUPABASE_URL = 'https://xnuepwipjeulqkteiiyf.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_7_Ipfb8xx6CFWvA7kBxPDA_q9iK4dGD';
+        const BUCKET = 'imagenes';
+
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let camisetas = [];
+        let parches = [];
+        let fotosTemporalesProducto = [];
+        let fotoTemporalParche = null;
+        let ordenModificado = false;
+        let tabActual = 'camisetas';
+        let filtroCamisetas = '';
+        let filtroParches = '';
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        async function hacerLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+            errorEl.textContent = '';
+
+            const { data, error } = await db.auth.signInWithPassword({ email, password });
+            if (error) { errorEl.textContent = '❌ ' + error.message; return; }
+            mostrarApp();
+        }
+
+        async function cerrarSesion() {
+            if (ordenModificado && !confirm('Hay cambios de orden sin guardar. ¿Salir igualmente?')) return;
+            await db.auth.signOut();
+            location.reload();
+        }
+
+        async function comprobarSesion() {
+            const { data: { session } } = await db.auth.getSession();
+            if (session) {
+                document.getElementById('userEmail').textContent = session.user.email || '';
+                mostrarApp();
+            }
+        }
+
+        function mostrarApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            cargarTodo();
+        }
+
+        // ============================================================
+        // CARGA
+        // ============================================================
+        async function cargarTodo() {
+            await Promise.all([cargarCamisetas(), cargarParches()]);
+        }
+
+        async function cargarCamisetas() {
+            const cont = document.getElementById('listaCamisetas');
+            cont.innerHTML = '<div class="loading">Cargando camisetas...</div>';
+            const { data, error } = await db.from('camisetas').select('*').order('orden', { ascending: true });
+            if (error) { cont.innerHTML = `<p style="color:red">${error.message}</p>`; return; }
+            camisetas = data || [];
+            renderizarCamisetas();
+        }
+
+        async function cargarParches() {
+            const cont = document.getElementById('listaParches');
+            cont.innerHTML = '<div class="loading">Cargando parches...</div>';
+            const { data, error } = await db.from('parches').select('*').order('orden', { ascending: true });
+            if (error) { cont.innerHTML = `<p style="color:red">${error.message}</p>`; return; }
+            parches = data || [];
+            renderizarParches();
+        }
+
+        // ============================================================
+        // RENDER
+        // ============================================================
+        function filtrarCamisetas() {
+            filtroCamisetas = document.getElementById('searchCamisetas').value.toLowerCase();
+            renderizarCamisetas();
+        }
+
+        function filtrarParches() {
+            filtroParches = document.getElementById('searchParches').value.toLowerCase();
+            renderizarParches();
+        }
+
+        function renderizarCamisetas() {
+            const cont = document.getElementById('listaCamisetas');
+
+            let lista = camisetas;
+            if (filtroCamisetas) {
+                lista = camisetas.filter(p =>
+                    (p.titulo || '').toLowerCase().includes(filtroCamisetas) ||
+                    (p.categoria || '').toLowerCase().includes(filtroCamisetas)
+                );
+            }
+
+            if (lista.length === 0) {
+                cont.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>No hay camisetas</p></div>`;
+                return;
+            }
+
+            cont.innerHTML = lista.map((p) => {
+                const imgs = (p.imagenes || '').split(/\s+/).filter(Boolean);
+                const thumb = imgs[0]
+                    ? `<img src="${imgs[0]}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-photo>Sin foto</div>'">`
+                    : '<div class="no-photo">Sin foto</div>';
+
+                const orderNum = camisetas.indexOf(p) + 1;
+
+                return `
+                    <div class="item-row" draggable="true" data-id="${p.id}" data-tipo="camiseta">
+                        <span class="drag-handle">☰</span>
+                        <span class="order-badge">#${orderNum}</span>
+                        <div class="item-thumb">${thumb}</div>
+                        <div class="item-info">
+                            <h3>${escapar(p.titulo)}</h3>
+                            <div class="meta">
+                                <span class="badge-cat">${escapar(p.categoria || '—')}</span>
+                                <span>${parseFloat(p.precio || 0).toFixed(2)} €</span>
+                                <span class="foto-count">📷 ${imgs.length}</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-icon fotos" title="Gestionar fotos" onclick="editarProducto('${p.id}')">📷</button>
+                            <button class="btn-icon" title="Editar" onclick="editarProducto('${p.id}')">✏️</button>
+                            <button class="btn-icon delete" title="Eliminar" onclick="borrarProducto('${p.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            activarDragAndDrop('camiseta');
+        }
+
+        function renderizarParches() {
+            const cont = document.getElementById('listaParches');
+
+            let lista = parches;
+            if (filtroParches) {
+                lista = parches.filter(p =>
+                    (p.nombre || '').toLowerCase().includes(filtroParches)
+                );
+            }
+
+            if (lista.length === 0) {
+                cont.innerHTML = `<div class="empty-state"><div class="icon">🛡️</div><p>No hay parches</p></div>`;
+                return;
+            }
+
+            cont.innerHTML = lista.map(p => {
+                const orderNum = parches.indexOf(p) + 1;
+                return `
+                    <div class="item-row" draggable="true" data-id="${p.id}" data-tipo="parche">
+                        <span class="drag-handle">☰</span>
+                        <span class="order-badge">#${orderNum}</span>
+                        <div class="item-thumb">
+                            ${p.imagen ? `<img src="${p.imagen}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-photo>Sin foto</div>'">` : '<div class="no-photo">Sin foto</div>'}
+                        </div>
+                        <div class="item-info">
+                            <h3>${escapar(p.nombre)}</h3>
+                            <div class="meta">
+                                <span class="badge-cat">${escapar(p.posicion || '—')}</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-icon" title="Editar" onclick="editarParche('${p.id}')">✏️</button>
+                            <button class="btn-icon delete" title="Eliminar" onclick="borrarParche('${p.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            activarDragAndDrop('parche');
+        }
+
+        // ============================================================
+        // DRAG AND DROP DE FILAS
+        // ============================================================
+        function activarDragAndDrop(tipo) {
+            const contenedor = tipo === 'camiseta'
+                ? document.getElementById('listaCamisetas')
+                : document.getElementById('listaParches');
+
+            const rows = contenedor.querySelectorAll('.item-row');
+            let draggedRow = null;
+
+            rows.forEach(row => {
+                row.addEventListener('dragstart', (e) => {
+                    draggedRow = row;
+                    row.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                row.addEventListener('dragend', () => {
+                    row.classList.remove('dragging');
+                    rows.forEach(r => r.classList.remove('drag-over'));
+                    draggedRow = null;
+                });
+
+                row.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (!draggedRow || draggedRow === row) return;
+                    row.classList.add('drag-over');
+                });
+
+                row.addEventListener('dragleave', () => {
+                    row.classList.remove('drag-over');
+                });
+
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    row.classList.remove('drag-over');
+                    if (!draggedRow || draggedRow === row) return;
+
+                    const contenedorReal = draggedRow.parentNode;
+                    const hijos = Array.from(contenedorReal.children);
+                    const idxDragged = hijos.indexOf(draggedRow);
+                    const idxTarget = hijos.indexOf(row);
+
+                    if (idxDragged < idxTarget) {
+                        row.parentNode.insertBefore(draggedRow, row.nextSibling);
+                    } else {
+                        row.parentNode.insertBefore(draggedRow, row);
+                    }
+
+                    reordenarArrayDesdeDOM(tipo);
+                });
+            });
+        }
+
+        function reordenarArrayDesdeDOM(tipo) {
+            const contenedor = tipo === 'camiseta'
+                ? document.getElementById('listaCamisetas')
+                : document.getElementById('listaParches');
+
+            const idsEnOrden = Array.from(contenedor.querySelectorAll('.item-row'))
+                .map(r => r.dataset.id);
+
+            const arrayOriginal = tipo === 'camiseta' ? camisetas : parches;
+
+            const nuevoArray = idsEnOrden
+                .map(id => arrayOriginal.find(p => String(p.id) === String(id)))
+                .filter(Boolean);
+
+            arrayOriginal.forEach(p => {
+                if (!nuevoArray.includes(p)) nuevoArray.push(p);
+            });
+
+            if (tipo === 'camiseta') camisetas = nuevoArray;
+            else parches = nuevoArray;
+
+            renderizarCamisetas();
+            renderizarParches();
+            marcarOrdenModificado();
+        }
+
+        function marcarOrdenModificado() {
+            ordenModificado = true;
+            const bar = document.getElementById('saveOrderBar');
+            document.getElementById('saveOrderText').textContent = 'Orden modificado';
+            bar.classList.add('show');
+        }
+
+        async function guardarOrden() {
+            const bar = document.getElementById('saveOrderBar');
+            document.getElementById('saveOrderText').textContent = 'Guardando...';
+
+            try {
+                const updatesCamisetas = camisetas.map((p, idx) =>
+                    db.from('camisetas').update({ orden: idx }).eq('id', p.id)
+                );
+                const updatesParches = parches.map((p, idx) =>
+                    db.from('parches').update({ orden: idx }).eq('id', p.id)
+                );
+                await Promise.all([...updatesCamisetas, ...updatesParches]);
+
+                ordenModificado = false;
+                document.getElementById('saveOrderText').textContent = '✅ Guardado';
+                setTimeout(() => bar.classList.remove('show'), 1500);
+            } catch (e) {
+                alert('Error guardando orden: ' + e.message);
+                document.getElementById('saveOrderText').textContent = '❌ Error';
+            }
+        }
+
+        function descartarOrden() {
+            if (!confirm('¿Descartar cambios de orden?')) return;
+            ordenModificado = false;
+            document.getElementById('saveOrderBar').classList.remove('show');
+            cargarTodo();
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        function cambiarTab(tab) {
+            if (ordenModificado && !confirm('Hay cambios de orden sin guardar. ¿Cambiar de pestaña igualmente?')) return;
+            ordenModificado = false;
+            document.getElementById('saveOrderBar').classList.remove('show');
+
+            tabActual = tab;
+            document.getElementById('tabCamisetas').style.display = tab === 'camisetas' ? 'block' : 'none';
+            document.getElementById('tabParches').style.display = tab === 'parches' ? 'block' : 'none';
+            document.getElementById('tabBtnCamisetas').classList.toggle('active', tab === 'camisetas');
+            document.getElementById('tabBtnParches').classList.toggle('active', tab === 'parches');
+        }
+
+        // ============================================================
+        // MODAL PRODUCTO
+        // ============================================================
+        function abrirModalProducto() {
+            document.getElementById('tituloModalProducto').textContent = 'Añadir producto';
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodTitulo').value = '';
+            document.getElementById('prodCategoria').value = 'Selecciones';
+            document.getElementById('prodPrecio').value = '';
+            document.getElementById('prodPrecioAntes').value = '';
+            document.getElementById('prodTallas').value = 'XS, S, M, L, XL, XXL';
+            document.getElementById('prodParches').value = '';
+            fotosTemporalesProducto = [];
+            renderizarFotosProducto();
+            actualizarPreviewProducto();
+            document.getElementById('modalProducto').classList.add('open');
+        }
+
+        async function editarProducto(id) {
+            const p = camisetas.find(x => String(x.id) === String(id));
+            if (!p) return;
+
+            document.getElementById('tituloModalProducto').textContent = 'Editar producto';
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('prodTitulo').value = p.titulo || '';
+            document.getElementById('prodCategoria').value = p.categoria || 'Selecciones';
+            document.getElementById('prodPrecio').value = p.precio || '';
+            document.getElementById('prodPrecioAntes').value = p.precio_antes || '';
+            document.getElementById('prodTallas').value = p.talla || '';
+            document.getElementById('prodParches').value = p.parches_ids || '';
+            fotosTemporalesProducto = (p.imagenes || '').split(/\s+/).filter(Boolean)
+                .map(url => ({ url, tempName: null }));
+            renderizarFotosProducto();
+            actualizarPreviewProducto();
+            document.getElementById('modalProducto').classList.add('open');
+        }
+
+        function renderizarFotosProducto() {
+            const grid = document.getElementById('photosGridProducto');
+            grid.innerHTML = fotosTemporalesProducto.map((f, i) => `
+                <div class="photo-item" draggable="true" data-index="${i}">
+                    <img src="${f.url}" alt="" draggable="false">
+                    <div class="drag-grip">☰</div>
+                    ${i === 0 ? '<span class="badge-principal">PRINCIPAL</span>' : ''}
+                    <button class="btn-borrar-foto" draggable="false" onclick="event.stopPropagation(); borrarFotoProducto(${i})">✕</button>
+                </div>
+            `).join('');
+
+            activarDragFotosProducto();
+        }
+
+        function activarDragFotosProducto() {
+            const grid = document.getElementById('photosGridProducto');
+            const items = grid.querySelectorAll('.photo-item');
+            let draggedItem = null;
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedItem = item;
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                    items.forEach(i => i.classList.remove('drag-over'));
+                    draggedItem = null;
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (!draggedItem || draggedItem === item) return;
+                    item.classList.add('drag-over');
+                });
+
+                item.addEventListener('dragleave', () => {
+                    item.classList.remove('drag-over');
+                });
+
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    item.classList.remove('drag-over');
+                    if (!draggedItem || draggedItem === item) return;
+
+                    const idxOrigen = parseInt(draggedItem.dataset.index);
+                    const idxDestino = parseInt(item.dataset.index);
+
+                    const [foto] = fotosTemporalesProducto.splice(idxOrigen, 1);
+                    fotosTemporalesProducto.splice(idxDestino, 0, foto);
+
+                    renderizarFotosProducto();
+                    actualizarPreviewProducto();
+                });
+            });
+        }
+
+        function borrarFotoProducto(idx) {
+            fotosTemporalesProducto.splice(idx, 1);
+            renderizarFotosProducto();
+            actualizarPreviewProducto();
+        }
+
+        function actualizarPreviewProducto() {
+            const titulo = document.getElementById('prodTitulo').value || 'Título del producto';
+            const categoria = document.getElementById('prodCategoria').value;
+            const precio = parseFloat(document.getElementById('prodPrecio').value || 0).toFixed(2);
+            const precioAntes = document.getElementById('prodPrecioAntes').value;
+            const primera = fotosTemporalesProducto[0];
+            const imgUrl = primera ? primera.url : '';
+
+            const imgHtml = imgUrl
+                ? `<img src="${imgUrl}" onerror="this.parentNode.innerHTML='<div style=color:#9ca3af;font-size:0.8rem>Sin imagen</div>'">`
+                : `<div style="color:#9ca3af;font-size:0.8rem">Sin imagen</div>`;
+
+            const precioHtml = precioAntes
+                ? `<span style="text-decoration:line-through;color:#9ca3af;font-size:0.85rem;margin-right:6px">${parseFloat(precioAntes).toFixed(2)} €</span><span>${precio} €</span>`
+                : `${precio} €`;
+
+            document.getElementById('previewProducto').innerHTML = `
+                <div class="tarjeta-preview">
+                    <div class="visor-prev">
+                        <span class="badge-prev">${categoria}</span>
+                        ${imgHtml}
+                    </div>
+                    <div class="info-prev">
+                        <h3>${escapar(titulo)}</h3>
+                        <div class="precio-prev">${precioHtml}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // SUBIR FOTOS (producto)
+        // ============================================================
+        function configurarDropZoneProducto() {
+            const dropZone = document.getElementById('dropZoneProducto');
+            const fileInput = document.getElementById('fileInputProducto');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) subirFotosProducto(Array.from(e.target.files));
+                fileInput.value = '';
+            });
+
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                if (files.length) subirFotosProducto(files);
+            });
+        }
+
+        async function subirFotosProducto(files) {
+            const idProd = document.getElementById('prodId').value;
+            if (!idProd) {
+                alert('Primero guarda el producto antes de subir fotos. Puedes guardar sin fotos y luego volver a abrirlo para añadirlas.');
+                return;
+            }
+
+            const progress = document.getElementById('uploadProgressProducto');
+            const text = document.getElementById('uploadTextProducto');
+            const fill = document.getElementById('progressFillProducto');
+            progress.classList.add('active');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+                const nombre = `${idProd}_${Date.now()}_${i}.${ext}`;
+
+                text.textContent = `Subiendo ${i + 1}/${files.length}: ${file.name}`;
+                fill.style.width = Math.round(((i + 1) / files.length) * 100) + '%';
+
+                try {
+                    const { error } = await db.storage.from(BUCKET).upload(nombre, file, {
+                        contentType: file.type,
+                        upsert: false
+                    });
+                    if (error) throw error;
+
+                    const { data } = db.storage.from(BUCKET).getPublicUrl(nombre);
+                    fotosTemporalesProducto.push({ url: data.publicUrl, tempName: nombre });
+                } catch (err) {
+                    console.error('Error subiendo', file.name, err);
+                }
+            }
+
+            renderizarFotosProducto();
+            actualizarPreviewProducto();
+
+            text.textContent = `✅ ${files.length} foto(s) subida(s). Guarda el producto para aplicar cambios.`;
+            setTimeout(() => progress.classList.remove('active'), 2500);
+        }
+
+        // ============================================================
+        // GUARDAR PRODUCTO
+        // ============================================================
+        async function guardarProducto() {
+            const idOrig = document.getElementById('prodId').value;
+            const titulo = document.getElementById('prodTitulo').value.trim();
+            const categoria = document.getElementById('prodCategoria').value;
+            const precio = parseFloat(document.getElementById('prodPrecio').value);
+            const precioAntes = document.getElementById('prodPrecioAntes').value;
+            const talla = document.getElementById('prodTallas').value.trim();
+            const parches_ids = document.getElementById('prodParches').value.trim();
+            const imagenes = fotosTemporalesProducto.map(f => f.url).join(' ');
+
+            if (!titulo || isNaN(precio)) {
+                alert('Rellena el título y el precio');
+                return;
+            }
+
+            const datos = {
+                titulo,
+                categoria,
+                precio,
+                precio_antes: precioAntes ? parseFloat(precioAntes) : null,
+                talla,
+                parches_ids,
+                imagenes
+            };
+
+            let error;
+            if (idOrig) {
+                ({ error } = await db.from('camisetas').update(datos).eq('id', idOrig));
+            } else {
+                const nuevoId = String(Date.now());
+                const maxOrden = camisetas.length > 0
+                    ? Math.max(...camisetas.map(c => c.orden || 0)) + 1
+                    : 0;
+                ({ error } = await db.from('camisetas').insert({ id: nuevoId, orden: maxOrden, ...datos }));
+            }
+
+            if (error) { alert('Error: ' + error.message); return; }
+
+            cerrarModal('modalProducto');
+            cargarCamisetas();
+        }
+
+        // ============================================================
+        // MODAL PARCHE
+        // ============================================================
+        function abrirModalParche() {
+            document.getElementById('tituloModalParche').textContent = 'Añadir parche';
+            document.getElementById('parcheId').value = '';
+            document.getElementById('parcheNombre').value = '';
+            document.getElementById('parcheCategoria').value = 'General';
+            document.getElementById('parchePosicion').value = 'C';
+            fotoTemporalParche = null;
+            renderizarFotoParche();
+            actualizarPreviewParche();
+            document.getElementById('modalParche').classList.add('open');
+        }
+
+        function editarParche(id) {
+            const p = parches.find(x => String(x.id) === String(id));
+            if (!p) return;
+
+            document.getElementById('tituloModalParche').textContent = 'Editar parche';
+            document.getElementById('parcheId').value = p.id;
+            document.getElementById('parcheNombre').value = p.nombre || '';
+            document.getElementById('parcheCategoria').value = p.categoria || 'General';
+            document.getElementById('parchePosicion').value = p.posicion || 'C';
+            fotoTemporalParche = p.imagen ? { url: p.imagen, tempName: null } : null;
+            renderizarFotoParche();
+            actualizarPreviewParche();
+            document.getElementById('modalParche').classList.add('open');
+        }
+
+        function renderizarFotoParche() {
+            const grid = document.getElementById('photosGridParche');
+            if (!fotoTemporalParche) {
+                grid.innerHTML = '<p style="font-size:0.8rem;color:#9ca3af">Sin imagen</p>';
+                return;
+            }
+            grid.innerHTML = `
+                <div class="photo-item">
+                    <img src="${fotoTemporalParche.url}" alt="">
+                    <button class="btn-borrar-foto" onclick="borrarFotoParche()">✕</button>
+                </div>
+            `;
+        }
+
+        function borrarFotoParche() {
+            fotoTemporalParche = null;
+            renderizarFotoParche();
+            actualizarPreviewParche();
+        }
+
+        function actualizarPreviewParche() {
+            const nombre = document.getElementById('parcheNombre').value || 'Nombre del parche';
+            const categoria = document.getElementById('parcheCategoria').value;
+            const posicion = document.getElementById('parchePosicion').value;
+            const img = fotoTemporalParche ? fotoTemporalParche.url : '';
+
+            document.getElementById('previewParche').innerHTML = `
+                <div class="parche-prev">
+                    ${img ? `<img src="${img}" onerror="this.style.display='none'">` : '<div style="font-size:2.5rem;margin-bottom:8px">🛡️</div>'}
+                    <h5>${escapar(nombre)}</h5>
+                    <span>Cat: ${categoria} · Pos: ${posicion}</span>
+                </div>
+            `;
+        }
+
+        function configurarDropZoneParche() {
+            const dropZone = document.getElementById('dropZoneParche');
+            const fileInput = document.getElementById('fileInputParche');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) subirFotoParche(e.target.files[0]);
+                fileInput.value = '';
+            });
+
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                if (files.length) subirFotoParche(files[0]);
+            });
+        }
+
+        async function subirFotoParche(file) {
+            const idParche = document.getElementById('parcheId').value || 'parche_' + Date.now();
+            const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+            const nombre = `${idParche}_${Date.now()}.${ext}`;
+
+            const progress = document.getElementById('uploadProgressParche');
+            const text = document.getElementById('uploadTextParche');
+            const fill = document.getElementById('progressFillParche');
+            progress.classList.add('active');
+            text.textContent = 'Subiendo...';
+            fill.style.width = '50%';
+
+            try {
+                const { error } = await db.storage.from(BUCKET).upload(nombre, file, {
+                    contentType: file.type, upsert: false
+                });
+                if (error) throw error;
+
+                const { data } = db.storage.from(BUCKET).getPublicUrl(nombre);
+                fotoTemporalParche = { url: data.publicUrl, tempName: nombre };
+                renderizarFotoParche();
+                actualizarPreviewParche();
+
+                text.textContent = '✅ Subida';
+                fill.style.width = '100%';
+                setTimeout(() => progress.classList.remove('active'), 1500);
+            } catch (err) {
+                text.textContent = '❌ Error: ' + err.message;
+            }
+        }
+
+        async function guardarParche() {
+            const idOrig = document.getElementById('parcheId').value;
+            const nombre = document.getElementById('parcheNombre').value.trim();
+            const categoria = document.getElementById('parcheCategoria').value;
+            const posicion = document.getElementById('parchePosicion').value;
+            const imagen = fotoTemporalParche ? fotoTemporalParche.url : '';
+
+            if (!nombre) { alert('El nombre es obligatorio'); return; }
+
+            const datos = { nombre, categoria, posicion, imagen };
+            let error;
+
+            if (idOrig) {
+                ({ error } = await db.from('parches').update(datos).eq('id', idOrig));
+            } else {
+                const nuevoId = 'P-' + Date.now();
+                const maxOrden = parches.length > 0
+                    ? Math.max(...parches.map(p => p.orden || 0)) + 1
+                    : 0;
+                ({ error } = await db.from('parches').insert({ id: nuevoId, orden: maxOrden, ...datos }));
+            }
+
+            if (error) { alert('Error: ' + error.message); return; }
+
+            cerrarModal('modalParche');
+            cargarParches();
+        }
+
+        // ============================================================
+        // BORRAR
+        // ============================================================
+        async function borrarProducto(id) {
+            const p = camisetas.find(x => String(x.id) === String(id));
+            if (!p) return;
+            if (!confirm(`¿Eliminar "${p.titulo}"? Esta acción no se puede deshacer.`)) return;
+
+            const imgs = (p.imagenes || '').split(/\s+/).filter(Boolean);
+            const nombres = imgs.map(u => u.split('/').pop()).filter(Boolean);
+            if (nombres.length > 0) {
+                try { await db.storage.from(BUCKET).remove(nombres); } catch (e) {}
+            }
+
+            const { error } = await db.from('camisetas').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            cargarCamisetas();
+        }
+
+        async function borrarParche(id) {
+            const p = parches.find(x => String(x.id) === String(id));
+            if (!p) return;
+            if (!confirm(`¿Eliminar el parche "${p.nombre}"?`)) return;
+
+            if (p.imagen) {
+                const nombre = p.imagen.split('/').pop();
+                try { await db.storage.from(BUCKET).remove([nombre]); } catch (e) {}
+            }
+
+            const { error } = await db.from('parches').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            cargarParches();
+        }
+
+        // ============================================================
+        // UTILS
+        // ============================================================
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        function escapar(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto || '';
+            return div.innerHTML;
+        }
+
+        // ============================================================
+        // INICIO
+        // ============================================================
+        configurarDropZoneProducto();
+        configurarDropZoneParche();
+        comprobarSesion();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+            }
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (ordenModificado) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
