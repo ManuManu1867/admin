@@ -14,148 +14,68 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        /* LOGIN */
-        #loginScreen {
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; padding: 20px;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-        }
-        .login-card {
-            background: white; padding: 40px; border-radius: 12px;
-            width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
+        #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .login-card h1 { font-size: 1.5rem; margin-bottom: 24px; text-align: center; }
-        .login-card input {
-            width: 100%; padding: 12px; border: 1px solid var(--border);
-            border-radius: 6px; margin-bottom: 12px; font-size: 1rem;
-        }
-        .login-card button {
-            width: 100%; padding: 12px; background: var(--primary);
-            color: white; border: none; border-radius: 6px;
-            font-weight: 700; font-size: 1rem; cursor: pointer;
-        }
+        .login-card input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px; font-size: 1rem; }
+        .login-card button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 1rem; cursor: pointer; }
         .login-card button:hover { background: var(--accent); }
         .login-error { color: var(--danger); font-size: 0.85rem; margin-top: 8px; text-align: center; min-height: 20px; }
 
-        /* APP */
         #appScreen { display: none; }
-        header {
-            background: var(--primary); color: white; padding: 14px 5%;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 50;
-        }
+        header { background: var(--primary); color: white; padding: 14px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
         header h1 { font-size: 1.1rem; }
         header .user-info { font-size: 0.8rem; opacity: 0.8; margin-left: 10px; }
         header .header-actions { display: flex; gap: 8px; align-items: center; }
-        header button {
-            background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);
-            padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem;
-        }
+        header button { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
         header button:hover { background: rgba(255,255,255,0.25); }
 
         main { padding: 24px 5%; max-width: 1200px; margin: 0 auto; }
 
-        /* TABS */
-        .tabs {
-            display: flex; gap: 4px; margin-bottom: 20px;
-            background: white; padding: 4px; border-radius: 10px;
-            border: 1px solid var(--border); width: fit-content;
-        }
-        .tab-btn {
-            padding: 10px 20px; border: none; background: transparent;
-            font-weight: 700; font-size: 0.9rem; border-radius: 8px;
-            cursor: pointer; color: var(--text-muted); transition: all 0.2s;
-        }
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: white; padding: 4px; border-radius: 10px; border: 1px solid var(--border); width: fit-content; }
+        .tab-btn { padding: 10px 20px; border: none; background: transparent; font-weight: 700; font-size: 0.9rem; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        /* TOOLBAR */
-        .toolbar {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
-        }
-        .search-input {
-            flex: 1; max-width: 320px; padding: 10px 14px;
-            border: 1px solid var(--border); border-radius: 8px;
-            font-size: 0.9rem; outline: none;
-        }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+        .search-input { flex: 1; max-width: 320px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
         .search-input:focus { border-color: var(--accent); }
-        .btn-primary {
-            background: var(--primary); color: white; border: none;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-weight: 700; font-size: 0.9rem; white-space: nowrap;
-        }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
         .btn-primary:hover { background: var(--accent); }
 
-        /* INFO BOX */
-        .info-box {
-            background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af;
-            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem;
-        }
+        .info-box { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem; }
 
-        /* LISTA PRODUCTOS */
         .lista { display: flex; flex-direction: column; gap: 8px; }
-        .item-row {
-            display: flex; align-items: center; gap: 12px;
-            background: white; padding: 10px 14px; border-radius: 10px;
-            border: 1px solid var(--border);
-            transition: all 0.15s; cursor: grab;
-        }
+        .item-row { display: flex; align-items: center; gap: 12px; background: white; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); transition: all 0.15s; cursor: grab; }
         .item-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .item-row.dragging { opacity: 0.4; cursor: grabbing; }
         .item-row.drag-over { border-color: var(--accent); border-width: 2px; }
 
         .drag-handle { color: #cbd5e1; font-size: 1.2rem; cursor: grab; user-select: none; padding: 0 4px; }
 
-        .item-thumb {
-            width: 60px; height: 60px; border-radius: 8px;
-            background: #f3f4f6; overflow: hidden; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .item-thumb { width: 60px; height: 60px; border-radius: 8px; background: #f3f4f6; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
         .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .item-thumb .no-photo { color: #9ca3af; font-size: 0.7rem; text-align: center; padding: 4px; }
+        .item-thumb .dice-thumb { font-size: 1.8rem; color: #111827; font-weight: 900; }
 
         .item-info { flex: 1; min-width: 0; }
         .item-info h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .item-info .meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; }
-        .item-info .badge-cat {
-            display: inline-block; background: #f3f4f6; color: #374151;
-            padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;
-            font-weight: 700; text-transform: uppercase;
-        }
-        .item-info .foto-count {
-            display: inline-flex; align-items: center; gap: 3px;
-            color: var(--accent); font-weight: 700;
-        }
+        .item-info .badge-cat { display: inline-block; background: #f3f4f6; color: #374151; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+        .item-info .foto-count { display: inline-flex; align-items: center; gap: 3px; color: var(--accent); font-weight: 700; }
+        .item-info .badge-mystery { background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; }
 
         .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
-        .btn-icon {
-            background: var(--bg); border: 1px solid var(--border); color: var(--text);
-            width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.95rem; transition: all 0.15s;
-        }
+        .btn-icon { background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.15s; }
         .btn-icon:hover { background: var(--surface); border-color: var(--primary); }
         .btn-icon.fotos:hover { background: var(--accent); color: white; border-color: var(--accent); }
         .btn-icon.delete:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* MODAL */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-            display: none; align-items: center; justify-content: center;
-            z-index: 1000; padding: 20px; overflow-y: auto;
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; overflow-y: auto; }
         .modal-overlay.open { display: flex; }
-        .modal {
-            background: white; border-radius: 12px; width: 100%; max-width: 900px;
-            max-height: 92vh; overflow-y: auto; padding: 24px;
-            animation: modalIn 0.2s ease;
-        }
+        .modal { background: white; border-radius: 12px; width: 100%; max-width: 900px; max-height: 92vh; overflow-y: auto; padding: 24px; animation: modalIn 0.2s ease; }
         @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
         .modal-header h2 { font-size: 1.2rem; }
         .btn-cerrar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); line-height: 1; }
 
@@ -164,119 +84,42 @@
 
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 9px 12px; border: 1px solid var(--border);
-            border-radius: 6px; font-size: 0.9rem; outline: none; font-family: inherit;
-        }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; font-family: inherit; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
 
-        /* DROP ZONE */
-        .drop-zone {
-            border: 3px dashed var(--border); border-radius: 12px;
-            padding: 28px 16px; text-align: center; cursor: pointer;
-            transition: all 0.2s; background: #fafafa; margin-bottom: 16px;
-        }
+        .drop-zone { border: 3px dashed var(--border); border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa; margin-bottom: 16px; }
         .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: #eff6ff; }
         .drop-zone p { margin-bottom: 4px; font-weight: 700; font-size: 0.9rem; }
         .drop-zone small { color: var(--text-muted); font-size: 0.8rem; }
         .drop-zone input[type="file"] { display: none; }
 
-        .upload-progress {
-            margin-top: 10px; padding: 12px; border-radius: 8px;
-            background: var(--bg); font-size: 0.85rem; display: none;
-        }
+        .upload-progress { margin-top: 10px; padding: 12px; border-radius: 8px; background: var(--bg); font-size: 0.85rem; display: none; }
         .upload-progress.active { display: block; }
         .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 6px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s; width: 0%; }
 
-        /* FOTOS GRID */
-        .photos-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px; margin-top: 8px;
-        }
-        .photo-item {
-            position: relative; aspect-ratio: 1; border-radius: 8px;
-            overflow: hidden; border: 2px solid var(--border); background: #f3f4f6;
-            cursor: grab;
-            transition: transform 0.15s, opacity 0.15s, border-color 0.15s;
-        }
+        .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 8px; }
+        .photo-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); background: #f3f4f6; cursor: grab; transition: transform 0.15s, opacity 0.15s, border-color 0.15s; }
         .photo-item:active { cursor: grabbing; }
-        .photo-item.dragging {
-            opacity: 0.4;
-            transform: scale(0.9);
-        }
-        .photo-item.drag-over {
-            border-color: var(--accent);
-            border-width: 3px;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
+        .photo-item.dragging { opacity: 0.4; transform: scale(0.9); }
+        .photo-item.drag-over { border-color: var(--accent); border-width: 3px; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-        .photo-item .btn-borrar-foto {
-            position: absolute; top: 4px; right: 4px;
-            background: rgba(239,68,68,0.9); color: white; border: none;
-            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-            font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
-            z-index: 3;
-        }
+        .photo-item .btn-borrar-foto { position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; z-index: 3; }
         .photo-item .btn-borrar-foto:hover { background: var(--danger); }
-        .photo-item .badge-principal {
-            position: absolute; bottom: 4px; left: 4px;
-            background: var(--accent); color: white; padding: 2px 6px;
-            border-radius: 4px; font-size: 0.6rem; font-weight: 700;
-            z-index: 2;
-        }
-        .photo-item .drag-grip {
-            position: absolute; top: 4px; left: 4px;
-            background: rgba(0,0,0,0.55); color: white;
-            width: 22px; height: 22px; border-radius: 5px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; pointer-events: none; z-index: 2;
-        }
+        .photo-item .badge-principal { position: absolute; bottom: 4px; left: 4px; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; z-index: 2; }
+        .photo-item .drag-grip { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.55); color: white; width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; pointer-events: none; z-index: 2; }
 
-        /* PREVIEW */
-        .preview-box {
-            background: #fafafa; border: 1px solid var(--border);
-            border-radius: 10px; padding: 14px; position: sticky; top: 20px;
-        }
-        .preview-title {
-            font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
-            text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;
-        }
-        .tarjeta-preview {
-            background: white; border: 1px solid var(--border);
-            border-radius: 8px; overflow: hidden; pointer-events: none;
-        }
-        .visor-prev {
-            position: relative; background: #f3f4f6; height: 220px;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
+        .preview-box { background: #fafafa; border: 1px solid var(--border); border-radius: 10px; padding: 14px; position: sticky; top: 20px; }
+        .preview-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .tarjeta-preview { background: white; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; pointer-events: none; }
+        .visor-prev { position: relative; background: #f3f4f6; height: 220px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .visor-prev img { width: 100%; height: 100%; object-fit: cover; }
-        .badge-prev {
-            position: absolute; top: 10px; left: 10px; background: white;
-            padding: 3px 8px; border-radius: 4px; font-size: 0.65rem;
-            font-weight: 700; text-transform: uppercase;
-        }
+        .badge-prev { position: absolute; top: 10px; left: 10px; background: white; padding: 3px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
         .info-prev { padding: 12px; }
         .info-prev h3 { font-size: 0.9rem; margin-bottom: 6px; font-weight: 600; }
         .precio-prev { font-size: 1.1rem; font-weight: 800; }
 
-        /* PARCHE PREVIEW */
-        .parche-prev {
-            background: white; border: 2px solid var(--accent); border-radius: 10px;
-            padding: 20px; text-align: center;
-        }
-        .parche-prev img {
-            width: 90px; height: 90px; object-fit: contain;
-            background: #f9fafb; border-radius: 8px; padding: 6px;
-            border: 1px solid var(--border); margin-bottom: 10px;
-        }
-        .parche-prev h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
-        .parche-prev span { font-size: 0.75rem; color: var(--text-muted); }
-
-        .form-actions {
-            display: flex; gap: 10px; justify-content: flex-end;
-            margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
-        }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
         .form-actions button { padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; }
         .form-actions .btn-cancelar { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
         .form-actions .btn-guardar { background: var(--success); color: white; border: none; }
@@ -286,31 +129,23 @@
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 
-        /* ORDER INDICATOR */
-        .order-badge {
-            background: #f3f4f6; color: #6b7280; font-weight: 700;
-            font-size: 0.7rem; padding: 3px 8px; border-radius: 10px;
-            min-width: 30px; text-align: center; flex-shrink: 0;
-        }
+        .order-badge { background: #f3f4f6; color: #6b7280; font-weight: 700; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; min-width: 30px; text-align: center; flex-shrink: 0; }
 
-        /* SAVE ORDER BUTTON */
-        .save-order-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: white; padding: 12px 24px;
-            border-radius: 50px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-            display: none; align-items: center; gap: 12px; z-index: 500;
-        }
+        .save-order-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 50px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); display: none; align-items: center; gap: 12px; z-index: 500; }
         .save-order-bar.show { display: flex; }
-        .save-order-bar button {
-            background: white; color: var(--primary); border: none;
-            padding: 6px 16px; border-radius: 20px; font-weight: 700; cursor: pointer;
-            font-size: 0.85rem;
+        .save-order-bar button { background: white; color: var(--primary); border: none; padding: 6px 16px; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+
+        .mystery-box-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fef3c7; color: #92400e;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 0.7rem; font-weight: 700;
+            margin-left: 6px;
         }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN -->
     <div id="loginScreen">
         <div class="login-card">
             <h1>🔐 Panel de Administración</h1>
@@ -321,7 +156,6 @@
         </div>
     </div>
 
-    <!-- APP -->
     <div id="appScreen">
         <header>
             <div style="display:flex; align-items:center;">
@@ -341,33 +175,26 @@
             </div>
 
             <div class="info-box">
-                💡 <strong>Arrastra y suelta</strong> las filas para cambiar el orden de los productos. Dentro de cada producto puedes <strong>arrastrar las fotos</strong> para reordenarlas (la primera es la principal).
+                💡 <strong>Arrastra y suelta</strong> las filas para cambiar el orden. Dentro de cada producto puedes <strong>arrastrar las fotos</strong> para reordenarlas (la primera es la principal).
             </div>
 
-            <!-- TAB CAMISETAS -->
             <div id="tabCamisetas">
                 <div class="toolbar">
                     <input type="text" class="search-input" id="searchCamisetas" placeholder="🔍 Buscar camiseta..." oninput="filtrarCamisetas()">
                     <button class="btn-primary" onclick="abrirModalProducto()">+ Añadir producto</button>
                 </div>
-                <div id="listaCamisetas" class="lista">
-                    <div class="loading">Cargando camisetas...</div>
-                </div>
+                <div id="listaCamisetas" class="lista"><div class="loading">Cargando camisetas...</div></div>
             </div>
 
-            <!-- TAB PARCHES -->
             <div id="tabParches" style="display:none;">
                 <div class="toolbar">
                     <input type="text" class="search-input" id="searchParches" placeholder="🔍 Buscar parche..." oninput="filtrarParches()">
                     <button class="btn-primary" onclick="abrirModalParche()">+ Añadir parche</button>
                 </div>
-                <div id="listaParches" class="lista">
-                    <div class="loading">Cargando parches...</div>
-                </div>
+                <div id="listaParches" class="lista"><div class="loading">Cargando parches...</div></div>
             </div>
         </main>
 
-        <!-- BARRA FLOTANTE DE GUARDAR ORDEN -->
         <div class="save-order-bar" id="saveOrderBar">
             <span id="saveOrderText">Orden modificado</span>
             <button onclick="guardarOrden()">💾 Guardar orden</button>
@@ -396,6 +223,8 @@
                         <label>Categoría *</label>
                         <select id="prodCategoria" onchange="actualizarPreviewProducto()">
                             <option value="Mystery Box">Mystery Box</option>
+                            <option value="Mundial 2026">Mundial 2026</option>
+                            <option value="La Liga 26/27">La Liga 26/27</option>
                             <option value="Selecciones">Selecciones</option>
                             <option value="Clubes">Clubes</option>
                             <option value="Retro">Retro</option>
@@ -410,7 +239,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Precio anterior (€) — opcional, para mostrar tachado</label>
+                        <label>Precio anterior (€) — opcional</label>
                         <input type="number" step="0.01" id="prodPrecioAntes" placeholder="Ej: 30.00" oninput="actualizarPreviewProducto()">
                     </div>
 
@@ -421,7 +250,35 @@
 
                     <div class="form-group">
                         <label>IDs de parches permitidos (separados por coma)</label>
-                        <input type="text" id="prodParches" placeholder="P-3631, P-3632 (dejar vacío = ninguno)">
+                        <input type="text" id="prodParches" placeholder="P-3631, P-3632 (vacío = ninguno)">
+                    </div>
+
+                    <!-- NUEVO: Mystery Box -->
+                    <div class="form-group" style="background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:12px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:0;">
+                            <input type="checkbox" id="prodEsMysteryBox" style="width:auto;" onchange="toggleCampoNumCamisetas()">
+                            <strong>🎁 Es Mystery Box</strong>
+                        </label>
+                        <p style="font-size:0.75rem;color:#1e40af;margin:6px 0 0 0;">Marca esta casilla si el producto es una caja misteriosa.</p>
+                        <div id="campoNumCamisetas" style="display:none;margin-top:10px;">
+                            <label>Nº de camisetas del pack:</label>
+                            <input type="number" id="prodNumCamisetas" value="1" min="1" max="10">
+                        </div>
+                    </div>
+
+                    <!-- NUEVO: Imagen Hover (GIF) -->
+                    <div class="form-group">
+                        <label>Imagen al pasar el ratón (GIF) — opcional</label>
+                        <div class="drop-zone" id="dropZoneHover" style="padding:18px;">
+                            <p style="font-size:0.85rem;">🎞️ Arrastra un GIF aquí</p>
+                            <small>o pulsa para seleccionarlo</small>
+                            <input type="file" id="fileInputHover" accept="image/*">
+                        </div>
+                        <input type="text" id="prodImagenHover" placeholder="...o pega una URL" style="margin-top:8px;" oninput="actualizarPreviewProducto()">
+                        <div class="upload-progress" id="uploadProgressHover">
+                            <span id="uploadTextHover">Subiendo...</span>
+                            <div class="progress-bar"><div class="progress-bar-fill" id="progressFillHover"></div></div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -521,9 +378,6 @@
     </div>
 
     <script>
-        // ============================================================
-        // CONFIG
-        // ============================================================
         const SUPABASE_URL = 'https://xnuepwipjeulqkteiiyf.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_7_Ipfb8xx6CFWvA7kBxPDA_q9iK4dGD';
         const BUCKET = 'imagenes';
@@ -599,7 +453,7 @@
         }
 
         // ============================================================
-        // RENDER
+        // RENDER LISTAS
         // ============================================================
         function filtrarCamisetas() {
             filtroCamisetas = document.getElementById('searchCamisetas').value.toLowerCase();
@@ -613,8 +467,8 @@
 
         function renderizarCamisetas() {
             const cont = document.getElementById('listaCamisetas');
-
             let lista = camisetas;
+
             if (filtroCamisetas) {
                 lista = camisetas.filter(p =>
                     (p.titulo || '').toLowerCase().includes(filtroCamisetas) ||
@@ -629,11 +483,17 @@
 
             cont.innerHTML = lista.map((p) => {
                 const imgs = (p.imagenes || '').split(/\s+/).filter(Boolean);
-                const thumb = imgs[0]
-                    ? `<img src="${imgs[0]}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-photo>Sin foto</div>'">`
-                    : '<div class="no-photo">Sin foto</div>';
+                let thumb = '';
+                if (p.es_mystery_box) {
+                    thumb = `<div class="dice-thumb">?</div>`;
+                } else if (imgs[0]) {
+                    thumb = `<img src="${imgs[0]}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=no-photo>Sin foto</div>'">`;
+                } else {
+                    thumb = '<div class="no-photo">Sin foto</div>';
+                }
 
                 const orderNum = camisetas.indexOf(p) + 1;
+                const mysteryBadge = p.es_mystery_box ? `<span class="badge-mystery">🎁 Mystery ×${p.num_camisetas || 1}</span>` : '';
 
                 return `
                     <div class="item-row" draggable="true" data-id="${p.id}" data-tipo="camiseta">
@@ -641,15 +501,16 @@
                         <span class="order-badge">#${orderNum}</span>
                         <div class="item-thumb">${thumb}</div>
                         <div class="item-info">
-                            <h3>${escapar(p.titulo)}</h3>
+                            <h3>${escapar(p.titulo)} ${mysteryBadge}</h3>
                             <div class="meta">
                                 <span class="badge-cat">${escapar(p.categoria || '—')}</span>
                                 <span>${parseFloat(p.precio || 0).toFixed(2)} €</span>
                                 <span class="foto-count">📷 ${imgs.length}</span>
+                                ${p.imagen_hover ? '<span style="color:#8b5cf6;font-weight:700;">🎞️ GIF</span>' : ''}
                             </div>
                         </div>
                         <div class="item-actions">
-                            <button class="btn-icon fotos" title="Gestionar fotos" onclick="editarProducto('${p.id}')">📷</button>
+                            <button class="btn-icon fotos" title="Editar / Fotos" onclick="editarProducto('${p.id}')">📷</button>
                             <button class="btn-icon" title="Editar" onclick="editarProducto('${p.id}')">✏️</button>
                             <button class="btn-icon delete" title="Eliminar" onclick="borrarProducto('${p.id}')">🗑️</button>
                         </div>
@@ -662,12 +523,10 @@
 
         function renderizarParches() {
             const cont = document.getElementById('listaParches');
-
             let lista = parches;
+
             if (filtroParches) {
-                lista = parches.filter(p =>
-                    (p.nombre || '').toLowerCase().includes(filtroParches)
-                );
+                lista = parches.filter(p => (p.nombre || '').toLowerCase().includes(filtroParches));
             }
 
             if (lista.length === 0) {
@@ -686,9 +545,7 @@
                         </div>
                         <div class="item-info">
                             <h3>${escapar(p.nombre)}</h3>
-                            <div class="meta">
-                                <span class="badge-cat">${escapar(p.posicion || '—')}</span>
-                            </div>
+                            <div class="meta"><span class="badge-cat">${escapar(p.posicion || '—')}</span></div>
                         </div>
                         <div class="item-actions">
                             <button class="btn-icon" title="Editar" onclick="editarParche('${p.id}')">✏️</button>
@@ -713,44 +570,30 @@
             let draggedRow = null;
 
             rows.forEach(row => {
-                row.addEventListener('dragstart', (e) => {
+                row.addEventListener('dragstart', () => {
                     draggedRow = row;
                     row.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
                 });
-
                 row.addEventListener('dragend', () => {
                     row.classList.remove('dragging');
                     rows.forEach(r => r.classList.remove('drag-over'));
                     draggedRow = null;
                 });
-
                 row.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     if (!draggedRow || draggedRow === row) return;
                     row.classList.add('drag-over');
                 });
-
-                row.addEventListener('dragleave', () => {
-                    row.classList.remove('drag-over');
-                });
-
+                row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
                 row.addEventListener('drop', (e) => {
                     e.preventDefault();
                     row.classList.remove('drag-over');
                     if (!draggedRow || draggedRow === row) return;
-
-                    const contenedorReal = draggedRow.parentNode;
-                    const hijos = Array.from(contenedorReal.children);
+                    const hijos = Array.from(draggedRow.parentNode.children);
                     const idxDragged = hijos.indexOf(draggedRow);
                     const idxTarget = hijos.indexOf(row);
-
-                    if (idxDragged < idxTarget) {
-                        row.parentNode.insertBefore(draggedRow, row.nextSibling);
-                    } else {
-                        row.parentNode.insertBefore(draggedRow, row);
-                    }
-
+                    if (idxDragged < idxTarget) row.parentNode.insertBefore(draggedRow, row.nextSibling);
+                    else row.parentNode.insertBefore(draggedRow, row);
                     reordenarArrayDesdeDOM(tipo);
                 });
             });
@@ -761,18 +604,11 @@
                 ? document.getElementById('listaCamisetas')
                 : document.getElementById('listaParches');
 
-            const idsEnOrden = Array.from(contenedor.querySelectorAll('.item-row'))
-                .map(r => r.dataset.id);
-
+            const idsEnOrden = Array.from(contenedor.querySelectorAll('.item-row')).map(r => r.dataset.id);
             const arrayOriginal = tipo === 'camiseta' ? camisetas : parches;
 
-            const nuevoArray = idsEnOrden
-                .map(id => arrayOriginal.find(p => String(p.id) === String(id)))
-                .filter(Boolean);
-
-            arrayOriginal.forEach(p => {
-                if (!nuevoArray.includes(p)) nuevoArray.push(p);
-            });
+            const nuevoArray = idsEnOrden.map(id => arrayOriginal.find(p => String(p.id) === String(id))).filter(Boolean);
+            arrayOriginal.forEach(p => { if (!nuevoArray.includes(p)) nuevoArray.push(p); });
 
             if (tipo === 'camiseta') camisetas = nuevoArray;
             else parches = nuevoArray;
@@ -784,9 +620,8 @@
 
         function marcarOrdenModificado() {
             ordenModificado = true;
-            const bar = document.getElementById('saveOrderBar');
             document.getElementById('saveOrderText').textContent = 'Orden modificado';
-            bar.classList.add('show');
+            document.getElementById('saveOrderBar').classList.add('show');
         }
 
         async function guardarOrden() {
@@ -794,13 +629,9 @@
             document.getElementById('saveOrderText').textContent = 'Guardando...';
 
             try {
-                const updatesCamisetas = camisetas.map((p, idx) =>
-                    db.from('camisetas').update({ orden: idx }).eq('id', p.id)
-                );
-                const updatesParches = parches.map((p, idx) =>
-                    db.from('parches').update({ orden: idx }).eq('id', p.id)
-                );
-                await Promise.all([...updatesCamisetas, ...updatesParches]);
+                const updCam = camisetas.map((p, idx) => db.from('camisetas').update({ orden: idx }).eq('id', p.id));
+                const updPar = parches.map((p, idx) => db.from('parches').update({ orden: idx }).eq('id', p.id));
+                await Promise.all([...updCam, ...updPar]);
 
                 ordenModificado = false;
                 document.getElementById('saveOrderText').textContent = '✅ Guardado';
@@ -822,7 +653,7 @@
         // TABS
         // ============================================================
         function cambiarTab(tab) {
-            if (ordenModificado && !confirm('Hay cambios de orden sin guardar. ¿Cambiar de pestaña igualmente?')) return;
+            if (ordenModificado && !confirm('Hay cambios sin guardar. ¿Cambiar igualmente?')) return;
             ordenModificado = false;
             document.getElementById('saveOrderBar').classList.remove('show');
 
@@ -836,6 +667,11 @@
         // ============================================================
         // MODAL PRODUCTO
         // ============================================================
+        function toggleCampoNumCamisetas() {
+            const checked = document.getElementById('prodEsMysteryBox').checked;
+            document.getElementById('campoNumCamisetas').style.display = checked ? 'block' : 'none';
+        }
+
         function abrirModalProducto() {
             document.getElementById('tituloModalProducto').textContent = 'Añadir producto';
             document.getElementById('prodId').value = '';
@@ -845,6 +681,10 @@
             document.getElementById('prodPrecioAntes').value = '';
             document.getElementById('prodTallas').value = 'XS, S, M, L, XL, XXL';
             document.getElementById('prodParches').value = '';
+            document.getElementById('prodEsMysteryBox').checked = false;
+            document.getElementById('prodNumCamisetas').value = 1;
+            document.getElementById('prodImagenHover').value = '';
+            toggleCampoNumCamisetas();
             fotosTemporalesProducto = [];
             renderizarFotosProducto();
             actualizarPreviewProducto();
@@ -863,8 +703,11 @@
             document.getElementById('prodPrecioAntes').value = p.precio_antes || '';
             document.getElementById('prodTallas').value = p.talla || '';
             document.getElementById('prodParches').value = p.parches_ids || '';
-            fotosTemporalesProducto = (p.imagenes || '').split(/\s+/).filter(Boolean)
-                .map(url => ({ url, tempName: null }));
+            document.getElementById('prodEsMysteryBox').checked = !!p.es_mystery_box;
+            document.getElementById('prodNumCamisetas').value = p.num_camisetas || 1;
+            document.getElementById('prodImagenHover').value = p.imagen_hover || '';
+            toggleCampoNumCamisetas();
+            fotosTemporalesProducto = (p.imagenes || '').split(/\s+/).filter(Boolean).map(url => ({ url, tempName: null }));
             renderizarFotosProducto();
             actualizarPreviewProducto();
             document.getElementById('modalProducto').classList.add('open');
@@ -890,39 +733,18 @@
             let draggedItem = null;
 
             items.forEach(item => {
-                item.addEventListener('dragstart', (e) => {
-                    draggedItem = item;
-                    item.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-
-                item.addEventListener('dragend', () => {
-                    item.classList.remove('dragging');
-                    items.forEach(i => i.classList.remove('drag-over'));
-                    draggedItem = null;
-                });
-
-                item.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    if (!draggedItem || draggedItem === item) return;
-                    item.classList.add('drag-over');
-                });
-
-                item.addEventListener('dragleave', () => {
-                    item.classList.remove('drag-over');
-                });
-
+                item.addEventListener('dragstart', () => { draggedItem = item; item.classList.add('dragging'); });
+                item.addEventListener('dragend', () => { item.classList.remove('dragging'); items.forEach(i => i.classList.remove('drag-over')); draggedItem = null; });
+                item.addEventListener('dragover', (e) => { e.preventDefault(); if (!draggedItem || draggedItem === item) return; item.classList.add('drag-over'); });
+                item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
                 item.addEventListener('drop', (e) => {
                     e.preventDefault();
                     item.classList.remove('drag-over');
                     if (!draggedItem || draggedItem === item) return;
-
                     const idxOrigen = parseInt(draggedItem.dataset.index);
                     const idxDestino = parseInt(item.dataset.index);
-
                     const [foto] = fotosTemporalesProducto.splice(idxOrigen, 1);
                     fotosTemporalesProducto.splice(idxDestino, 0, foto);
-
                     renderizarFotosProducto();
                     actualizarPreviewProducto();
                 });
@@ -940,12 +762,18 @@
             const categoria = document.getElementById('prodCategoria').value;
             const precio = parseFloat(document.getElementById('prodPrecio').value || 0).toFixed(2);
             const precioAntes = document.getElementById('prodPrecioAntes').value;
+            const esMystery = document.getElementById('prodEsMysteryBox').checked;
             const primera = fotosTemporalesProducto[0];
             const imgUrl = primera ? primera.url : '';
 
-            const imgHtml = imgUrl
-                ? `<img src="${imgUrl}" onerror="this.parentNode.innerHTML='<div style=color:#9ca3af;font-size:0.8rem>Sin imagen</div>'">`
-                : `<div style="color:#9ca3af;font-size:0.8rem">Sin imagen</div>`;
+            let imgHtml;
+            if (imgUrl) {
+                imgHtml = `<img src="${imgUrl}" onerror="this.parentNode.innerHTML='<div style=color:#9ca3af;font-size:0.8rem>Sin imagen</div>'">`;
+            } else if (esMystery) {
+                imgHtml = `<div style="font-size:4rem;font-weight:900;font-family:Georgia,serif;color:#111827;background:#fde047;width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:4px dashed rgba(0,0,0,0.35);padding-bottom:12px;box-sizing:border-box;">?</div>`;
+            } else {
+                imgHtml = `<div style="color:#9ca3af;font-size:0.8rem">Sin imagen</div>`;
+            }
 
             const precioHtml = precioAntes
                 ? `<span style="text-decoration:line-through;color:#9ca3af;font-size:0.85rem;margin-right:6px">${parseFloat(precioAntes).toFixed(2)} €</span><span>${precio} €</span>`
@@ -966,7 +794,7 @@
         }
 
         // ============================================================
-        // SUBIR FOTOS (producto)
+        // DROP ZONES
         // ============================================================
         function configurarDropZoneProducto() {
             const dropZone = document.getElementById('dropZoneProducto');
@@ -977,7 +805,6 @@
                 if (e.target.files.length) subirFotosProducto(Array.from(e.target.files));
                 fileInput.value = '';
             });
-
             dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
             dropZone.addEventListener('drop', (e) => {
@@ -988,10 +815,29 @@
             });
         }
 
+        function configurarDropZoneHover() {
+            const dropZone = document.getElementById('dropZoneHover');
+            const fileInput = document.getElementById('fileInputHover');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) subirHoverProducto(e.target.files[0]);
+                fileInput.value = '';
+            });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                if (file) subirHoverProducto(file);
+            });
+        }
+
         async function subirFotosProducto(files) {
             const idProd = document.getElementById('prodId').value;
             if (!idProd) {
-                alert('Primero guarda el producto antes de subir fotos. Puedes guardar sin fotos y luego volver a abrirlo para añadirlas.');
+                alert('Primero guarda el producto antes de subir fotos. Guarda sin fotos y luego vuelve a abrirlo.');
                 return;
             }
 
@@ -1010,11 +856,9 @@
 
                 try {
                     const { error } = await db.storage.from(BUCKET).upload(nombre, file, {
-                        contentType: file.type,
-                        upsert: false
+                        contentType: file.type, upsert: false
                     });
                     if (error) throw error;
-
                     const { data } = db.storage.from(BUCKET).getPublicUrl(nombre);
                     fotosTemporalesProducto.push({ url: data.publicUrl, tempName: nombre });
                 } catch (err) {
@@ -1025,8 +869,41 @@
             renderizarFotosProducto();
             actualizarPreviewProducto();
 
-            text.textContent = `✅ ${files.length} foto(s) subida(s). Guarda el producto para aplicar cambios.`;
+            text.textContent = `✅ ${files.length} foto(s) subida(s). Guarda para aplicar.`;
             setTimeout(() => progress.classList.remove('active'), 2500);
+        }
+
+        async function subirHoverProducto(file) {
+            const idProd = document.getElementById('prodId').value;
+            if (!idProd) {
+                alert('Primero guarda el producto antes de subir el GIF. Guarda sin GIF y luego vuelve a abrirlo.');
+                return;
+            }
+
+            const ext = (file.name.split('.').pop() || 'gif').toLowerCase();
+            const nombre = `${idProd}_hover_${Date.now()}.${ext}`;
+
+            const progress = document.getElementById('uploadProgressHover');
+            const text = document.getElementById('uploadTextHover');
+            const fill = document.getElementById('progressFillHover');
+            progress.classList.add('active');
+            text.textContent = 'Subiendo GIF...';
+            fill.style.width = '50%';
+
+            try {
+                const { error } = await db.storage.from(BUCKET).upload(nombre, file, {
+                    contentType: file.type, upsert: false
+                });
+                if (error) throw error;
+                const { data } = db.storage.from(BUCKET).getPublicUrl(nombre);
+                document.getElementById('prodImagenHover').value = data.publicUrl;
+                actualizarPreviewProducto();
+                text.textContent = '✅ GIF subido';
+                fill.style.width = '100%';
+                setTimeout(() => progress.classList.remove('active'), 1500);
+            } catch (err) {
+                text.textContent = '❌ Error: ' + err.message;
+            }
         }
 
         // ============================================================
@@ -1041,6 +918,9 @@
             const talla = document.getElementById('prodTallas').value.trim();
             const parches_ids = document.getElementById('prodParches').value.trim();
             const imagenes = fotosTemporalesProducto.map(f => f.url).join(' ');
+            const esMysteryBox = document.getElementById('prodEsMysteryBox').checked;
+            const numCamisetas = parseInt(document.getElementById('prodNumCamisetas').value) || 1;
+            const imagenHover = document.getElementById('prodImagenHover').value.trim();
 
             if (!titulo || isNaN(precio)) {
                 alert('Rellena el título y el precio');
@@ -1048,13 +928,12 @@
             }
 
             const datos = {
-                titulo,
-                categoria,
-                precio,
+                titulo, categoria, precio,
                 precio_antes: precioAntes ? parseFloat(precioAntes) : null,
-                talla,
-                parches_ids,
-                imagenes
+                talla, parches_ids, imagenes,
+                es_mystery_box: esMysteryBox,
+                num_camisetas: esMysteryBox ? numCamisetas : 1,
+                imagen_hover: imagenHover || null
             };
 
             let error;
@@ -1062,9 +941,7 @@
                 ({ error } = await db.from('camisetas').update(datos).eq('id', idOrig));
             } else {
                 const nuevoId = String(Date.now());
-                const maxOrden = camisetas.length > 0
-                    ? Math.max(...camisetas.map(c => c.orden || 0)) + 1
-                    : 0;
+                const maxOrden = camisetas.length > 0 ? Math.max(...camisetas.map(c => c.orden || 0)) + 1 : 0;
                 ({ error } = await db.from('camisetas').insert({ id: nuevoId, orden: maxOrden, ...datos }));
             }
 
@@ -1075,7 +952,7 @@
         }
 
         // ============================================================
-        // MODAL PARCHE
+        // MODAL PARCHE (igual que antes)
         // ============================================================
         function abrirModalParche() {
             document.getElementById('tituloModalParche').textContent = 'Añadir parche';
@@ -1131,10 +1008,10 @@
             const img = fotoTemporalParche ? fotoTemporalParche.url : '';
 
             document.getElementById('previewParche').innerHTML = `
-                <div class="parche-prev">
-                    ${img ? `<img src="${img}" onerror="this.style.display='none'">` : '<div style="font-size:2.5rem;margin-bottom:8px">🛡️</div>'}
-                    <h5>${escapar(nombre)}</h5>
-                    <span>Cat: ${categoria} · Pos: ${posicion}</span>
+                <div style="background:white;border:2px solid var(--accent);border-radius:10px;padding:20px;text-align:center;">
+                    ${img ? `<img src="${img}" style="width:90px;height:90px;object-fit:contain;background:#f9fafb;border-radius:8px;padding:6px;border:1px solid var(--border);margin-bottom:10px;" onerror="this.style.display='none'">` : '<div style="font-size:2.5rem;margin-bottom:8px">🛡️</div>'}
+                    <h5 style="font-size:0.9rem;font-weight:700;margin-bottom:4px;">${escapar(nombre)}</h5>
+                    <span style="font-size:0.75rem;color:#6b7280;">Cat: ${categoria} · Pos: ${posicion}</span>
                 </div>
             `;
         }
@@ -1148,7 +1025,6 @@
                 if (e.target.files.length) subirFotoParche(e.target.files[0]);
                 fileInput.value = '';
             });
-
             dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
             dropZone.addEventListener('drop', (e) => {
@@ -1176,12 +1052,10 @@
                     contentType: file.type, upsert: false
                 });
                 if (error) throw error;
-
                 const { data } = db.storage.from(BUCKET).getPublicUrl(nombre);
                 fotoTemporalParche = { url: data.publicUrl, tempName: nombre };
                 renderizarFotoParche();
                 actualizarPreviewParche();
-
                 text.textContent = '✅ Subida';
                 fill.style.width = '100%';
                 setTimeout(() => progress.classList.remove('active'), 1500);
@@ -1206,14 +1080,11 @@
                 ({ error } = await db.from('parches').update(datos).eq('id', idOrig));
             } else {
                 const nuevoId = 'P-' + Date.now();
-                const maxOrden = parches.length > 0
-                    ? Math.max(...parches.map(p => p.orden || 0)) + 1
-                    : 0;
+                const maxOrden = parches.length > 0 ? Math.max(...parches.map(p => p.orden || 0)) + 1 : 0;
                 ({ error } = await db.from('parches').insert({ id: nuevoId, orden: maxOrden, ...datos }));
             }
 
             if (error) { alert('Error: ' + error.message); return; }
-
             cerrarModal('modalParche');
             cargarParches();
         }
@@ -1228,9 +1099,8 @@
 
             const imgs = (p.imagenes || '').split(/\s+/).filter(Boolean);
             const nombres = imgs.map(u => u.split('/').pop()).filter(Boolean);
-            if (nombres.length > 0) {
-                try { await db.storage.from(BUCKET).remove(nombres); } catch (e) {}
-            }
+            if (p.imagen_hover) nombres.push(p.imagen_hover.split('/').pop());
+            if (nombres.length > 0) { try { await db.storage.from(BUCKET).remove(nombres); } catch (e) {} }
 
             const { error } = await db.from('camisetas').delete().eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
@@ -1255,9 +1125,7 @@
         // ============================================================
         // UTILS
         // ============================================================
-        function cerrarModal(id) {
-            document.getElementById(id).classList.remove('open');
-        }
+        function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
 
         function escapar(texto) {
             const div = document.createElement('div');
@@ -1269,6 +1137,7 @@
         // INICIO
         // ============================================================
         configurarDropZoneProducto();
+        configurarDropZoneHover();
         configurarDropZoneParche();
         comprobarSesion();
 
@@ -1279,10 +1148,7 @@
         });
 
         window.addEventListener('beforeunload', (e) => {
-            if (ordenModificado) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
+            if (ordenModificado) { e.preventDefault(); e.returnValue = ''; }
         });
     </script>
 </body>
