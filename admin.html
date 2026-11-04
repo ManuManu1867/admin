@@ -69,6 +69,7 @@
         .btn-icon { background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.15s; }
         .btn-icon:hover { background: var(--surface); border-color: var(--primary); }
         .btn-icon.fotos:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        .btn-icon.duplicate:hover { background: #8b5cf6; color: white; border-color: #8b5cf6; }
         .btn-icon.delete:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; overflow-y: auto; }
@@ -168,7 +169,7 @@
             </div>
 
             <div class="info-box">
-                💡 <strong>Arrastra y suelta</strong> las filas para cambiar el orden. Dentro de cada producto puedes <strong>arrastrar las fotos</strong> para reordenarlas (la primera es la principal).
+                💡 <strong>Arrastra y suelta</strong> las filas para cambiar el orden. Dentro de cada producto puedes <strong>arrastrar las fotos</strong> para reordenarlas (la primera es la principal). Usa el botón 📋 para <strong>duplicar</strong> cualquier producto existente.
             </div>
 
             <div id="tabCamisetas">
@@ -226,7 +227,6 @@
                         </select>
                     </div>
 
-                    <!-- NUEVO: Desplegable Tipo de Prenda -->
                     <div class="form-group">
                         <label>Tipo de prenda *</label>
                         <select id="prodTipo" onchange="actualizarPreviewProducto()">
@@ -517,6 +517,7 @@
                             </div>
                         </div>
                         <div class="item-actions">
+                            <button class="btn-icon duplicate" title="Duplicar producto" onclick="duplicarProducto('${p.id}')">📋</button>
                             <button class="btn-icon fotos" title="Editar / Fotos" onclick="editarProducto('${p.id}')">📷</button>
                             <button class="btn-icon" title="Editar" onclick="editarProducto('${p.id}')">✏️</button>
                             <button class="btn-icon delete" title="Eliminar" onclick="borrarProducto('${p.id}')">🗑️</button>
@@ -681,7 +682,6 @@
 
         function abrirModalProducto() {
             document.getElementById('tituloModalProducto').textContent = 'Añadir producto';
-            // Generar ID temporal único para permitir subida de archivos inmediata
             document.getElementById('prodId').value = 'prod_' + Date.now();
             document.getElementById('prodTitulo').value = '';
             document.getElementById('prodCategoria').value = 'Selecciones';
@@ -712,6 +712,29 @@
             document.getElementById('prodPrecio').value = p.precio || '';
             document.getElementById('prodPrecioAntes').value = p.precio_antes || '';
             document.getElementById('prodTallas').value = p.talla || '';
+            document.getElementById('prodParches').value = p.parches_ids || '';
+            document.getElementById('prodEsMysteryBox').checked = !!p.es_mystery_box;
+            document.getElementById('prodNumCamisetas').value = p.num_camisetas || 1;
+            document.getElementById('prodImagenHover').value = p.imagen_hover || '';
+            toggleCampoNumCamisetas();
+            fotosTemporalesProducto = (p.imagenes || '').split(/\s+/).filter(Boolean).map(url => ({ url, tempName: null }));
+            renderizarFotosProducto();
+            actualizarPreviewProducto();
+            document.getElementById('modalProducto').classList.add('open');
+        }
+
+        function duplicarProducto(id) {
+            const p = camisetas.find(x => String(x.id) === String(id));
+            if (!p) return;
+
+            document.getElementById('tituloModalProducto').textContent = '📋 Duplicar producto';
+            document.getElementById('prodId').value = 'prod_' + Date.now();
+            document.getElementById('prodTitulo').value = (p.titulo ? 'Copia de ' + p.titulo : 'Copia de producto');
+            document.getElementById('prodCategoria').value = p.categoria || 'Selecciones';
+            document.getElementById('prodTipo').value = p.tipo || 'Camiseta';
+            document.getElementById('prodPrecio').value = p.precio || '';
+            document.getElementById('prodPrecioAntes').value = p.precio_antes || '';
+            document.getElementById('prodTallas').value = p.talla || 'XS, S, M, L, XL, XXL';
             document.getElementById('prodParches').value = p.parches_ids || '';
             document.getElementById('prodEsMysteryBox').checked = !!p.es_mystery_box;
             document.getElementById('prodNumCamisetas').value = p.num_camisetas || 1;
@@ -807,7 +830,6 @@
         // DROP ZONES Y ORDENACIÓN AUTOMÁTICA POR NOMBRE (1, 2, 3...)
         // ============================================================
         function extraerNumeroDeNombre(nombreArchivo) {
-            // Intenta extraer el primer número que encuentre en el nombre del archivo (ej. "1.jpg" -> 1, "foto_12.png" -> 12)
             const match = nombreArchivo.match(/\d+/);
             return match ? parseInt(match[0], 10) : 9999;
         }
@@ -852,8 +874,6 @@
 
         async function subirFotosProducto(files) {
             const idProd = document.getElementById('prodId').value;
-            
-            // Ordenar los archivos seleccionados basándose en los números de sus nombres (1, 2, 3...)
             files.sort((a, b) => extraerNumeroDeNombre(a.name) - extraerNumeroDeNombre(b.name));
 
             const progress = document.getElementById('uploadProgressProducto');
@@ -948,7 +968,6 @@
             };
 
             let error;
-            // Si es un ID temporal generado al vuelo, comprobar si ya existe en base de datos o insertar como nuevo
             const existeEnBD = camisetas.some(c => String(c.id) === String(idOrig));
 
             if (idOrig && existeEnBD) {
